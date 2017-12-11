@@ -1,4 +1,5 @@
 <?php
+
 namespace CultureKings\ShopifyAuth\Http\Controllers;
 
 use CultureKings\ShopifyAuth\Services\ShopifyAuthService;
@@ -23,7 +24,7 @@ class AuthController
 
     public function installShop(Request $request, $appName)
     {
-        $shopifyAppConfig = config('shopify-auth.'.$appName);
+        $shopifyAppConfig = config('shopify-auth.' . $appName);
         $shopUrl = $request->get('shop');
 
         if (!$shopUrl) {
@@ -34,13 +35,14 @@ class AuthController
         $redirectUrl = url($shopifyAppConfig['redirect_url']);
         $appName = $shopifyAppConfig['name'];
 
-        $user = ShopifyUser::where('shop_url', $shopUrl)->whereHas('shopifyAppUsers', function($query) use ($appName) {
+        $user = ShopifyUser::with('shopifyAppUsers')->where('shop_url', $shopUrl)->whereHas('shopifyAppUsers', function ($query) use ($appName) {
             $query->whereShopifyAppName($appName);
         })->get();
 
         // if existing user for this app, send to dashboard
-        if ($user !== null && !$user->isEmpty() && $user->shopifyAppUsers->count()) {
-            return redirect()->to($shopifyAppConfig['dashboard_url']);
+        if ($user !== null && !$user->isEmpty() && $user->first()->shopifyAppUsers->count()) {
+            $url = url($shopifyAppConfig['dashboard_url'] . "?" . $request->getQueryString());
+            return redirect()->to($url);
         }
 
         $shopify = $this->shopify
@@ -53,7 +55,7 @@ class AuthController
 
     public function processOAuthResultRedirect(Request $request, $appName)
     {
-        $shopifyAppConfig = config('shopify-auth.'.$appName);
+        $shopifyAppConfig = config('shopify-auth.' . $appName);
         $code = $request->get('code');
         $shopUrl = $request->get('shop');
 
@@ -75,7 +77,7 @@ class AuthController
 
     public function getSuccessPage($appName)
     {
-        $shopifyAppConfig = config('shopify-auth.'.$appName);
+        $shopifyAppConfig = config('shopify-auth.' . $appName);
 
         return view($shopifyAppConfig['view_install_success_path']);
     }
@@ -109,7 +111,7 @@ class AuthController
             'shop_url' => $shopUrl,
             'shopify_app' => $appName,
         ])->get();
-        
+
         foreach ($tags as $tag) {
             $tag->delete();
         }

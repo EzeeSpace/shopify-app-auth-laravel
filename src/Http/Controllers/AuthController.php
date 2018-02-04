@@ -32,7 +32,7 @@ class AuthController
         }
 
         $scope = $shopifyAppConfig['scope'];
-        $redirectUrl = url($shopifyAppConfig['redirect_url']);
+        $redirectUrl = url($shopifyAppConfig['redirect_url'], [], true);
         $appName = $shopifyAppConfig['name'];
 
         $user = ShopifyUser::with('shopifyAppUsers')->where('shop_url', $shopUrl)->whereHas('shopifyAppUsers', function ($query) use ($appName) {

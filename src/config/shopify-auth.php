@@ -11,6 +11,6 @@ return [
             "write_script_tags"
         ],
         'key' => env("SHOPIFY_APPNAME_APIKEY"),
-        'secret' => env("SHOPIFY_APPNAME_SECRET"),
+        'secret' => env("SHOPIFY_APPNAME_SECRET")
     ],
 ];

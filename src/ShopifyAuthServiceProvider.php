@@ -28,6 +28,8 @@ class ShopifyAuthServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
 
         $this->app->alias('ShopifyAuth', 'CultureKings\ShopifyAuth\Facades\ShopifyApi');
+
+
     }
 
     /**
